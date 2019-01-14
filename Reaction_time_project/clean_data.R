@@ -27,7 +27,6 @@ rt490 <- rt490 %>% mutate(IMEQ3=IMEQ) %>%
   mutate(IMEQ3 =ifelse(IMEQ %in% c("DefEvening", "ModEvening"), "Evening", 
                        ifelse(IMEQ =="ModMorning", "Morning",
                               ifelse(IMEQ == "Neither", "Neither", NA))))
-table(rt490$IMEQ3)/8
 
 #MEQ as numeric
 rt490<-rt490 %>% mutate(MEQ=MEQ) %>%
@@ -47,37 +46,6 @@ rt490<-rt490 %>% mutate(protocol = factor(protocol, levels = c(1, 0)))%>%
   mutate(illness = factor(protocol, levels = c(1, 0)))
 
 rt4902<-na.omit(rt490)
-#time of day
-rt4902$timeofday<-as.POSIXlt(rt4902$timeofday)
-rt4902<-rt4902 %>% mutate(numtime=rt4902$timeofday$hour+rt4902$timeofday$min/60)
-
-#IMEQ 
-rt4902<-rt4902 %>% mutate(IMEQ= MEQ) %>% 
-  mutate(IMEQ = replace(IMEQ, which(IMEQ  < 31 & IMEQ > 15), "DefEvening")) %>%
-  mutate(IMEQ = replace(IMEQ, which(IMEQ <41 & IMEQ > 30), "ModEvening")) %>%
-  mutate(IMEQ = replace(IMEQ, which(IMEQ  < 59 & IMEQ > 41), "Neither")) %>%
-  mutate(IMEQ = replace(IMEQ, which(IMEQ < 70 & IMEQ > 58), "ModMorning")) %>%
-  mutate(IMEQ = replace(IMEQ, which(IMEQ < 88 & IMEQ > 70), "DefMorning")) %>%
-  mutate(IMEQ = replace(IMEQ, which (IMEQ == "evening type" | IMEQ == "Moderately evening person" |IMEQ == "night" ), "ModEvening"))%>% mutate(IMEQ= factor(IMEQ, levels = c("DefEvening","ModEvening", "Neither", "ModMorning", "DefMorning")))
-
-#IMEQ3
-rt4902 <- rt4902 %>% mutate(IMEQ3=IMEQ) %>% 
-  mutate(IMEQ3 =ifelse(IMEQ %in% c("DefEvening", "ModEvening"), "Evening", 
-                       ifelse(IMEQ =="ModMorning", "Morning","Neither")))
-table(rt4902$IMEQ3)/8
-
-#MEQ as numeric
-rt4902<-rt4902 %>% mutate(MEQ=MEQ) %>%
-  mutate(MEQ= replace(MEQ, which(MEQ == "evening type"), (59+69)/2)) %>%
-  mutate(MEQ= replace(MEQ, which(MEQ == "neither"), (42+58)/2)) %>%
-  mutate(MEQ= replace(MEQ, which(MEQ == "Moderately evening person"), (59+69)/2)) %>%
-  mutate(MEQ= replace(MEQ, which(MEQ == "Moderately evening person"), (59+69)/2)) %>%
-  mutate(MEQ= as.numeric(MEQ))
-
-rt4902<- rt4902 %>% mutate(protocol = factor(protocol, levels = c(1, 0))) %>%
-  mutate(busy_light =factor(busy_light, levels = c(1, 0))) %>%
-  mutate(stimulant = factor(stimulant, levels = c(1, 0))) %>%
-  mutate(illness = factor(illness, levels = c(1, 0)))
 
 #================================================================ rt4903 =============================================================================
 rt4903<-rt490%>% select(-timeofday)# this is mean/most common value

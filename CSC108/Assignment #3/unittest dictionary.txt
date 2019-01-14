@@ -1,0 +1,27 @@
+a
+John Smith
+CA, le32c
+http://haruhi.com
+Hello! This is John Smith
+SOS
+
+ENDBIO
+b
+c
+END
+b
+BRIAN
+
+
+Whose eyes are those eyes?
+ENDBIO
+c
+END
+c
+charles.kappa
+L
+...
+ENDBIO
+a
+c
+END

@@ -1,0 +1,328 @@
+---
+title: "STA457 Assignment 1"
+author: "Aofei Liu (1002291334) Yu-Hong Lin (1002945218)"
+date: "October 27, 2018"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+Question 1. Derive the variance of the predictor $F_t$ given in Equation(1).
+
+\textbf{Answer:}
+
+$$
+\begin{aligned}
+\sigma^2_F &= var(\sum_{i=0}^{m-2} d_i \times X_{t-i})\\
+\\
+&= \sum_{i=0}^{m-2} \sum_{j=0}^{m-2} d_i \times d_j \times Cov(X_{t-i}, X_{t-j})\\
+\\
+&= \sum_{i=0}^{m-2} \sum_{j=0}^{m-2} d_i \times d_j \times \gamma_{(i-j)}\\
+\\
+&= \sum_{i=0}^{m-2} d_i \bigg \{ \sum_{j=0}^{r-1} d_j \gamma_{(i-j)} + \sum_{j=r}^{m-2} d_j \gamma_{(i-j)}) \bigg \}\\
+\\
+&= \sum_{i=0}^{r-1} d_i \bigg \{\sum_{j=0}^{r-1} d_j \gamma_{(i-j)} + \sum_{j=r}^{m-2} d_j \gamma_{(i-j)} \bigg \} \\
+\\
+&+ \sum_{i=r}^{m-2} d_i \bigg \{ \sum_{j=0}^{r-1} d_j \gamma_{(i-j)} + \sum_{j=r}^{m-2} d_j \gamma_{(i-j)}\bigg \}\\
+\\
+&= \sum_{i=0}^{r-1}\sum_{j=0}^{r-1} d_i d_j \gamma_{(i-j)} + 2 \times \bigg \{ \sum_{i=0}^{r-1}\sum_{j=r}^{m-2} d_i d_j \gamma_{(i-j)} \bigg \} + \sum_{i=r}^{m-2}\sum_{j=r}^{m-2}d_id_j \gamma_{(i-j)}
+\end{aligned}
+$$
+
+\newpage
+
+Question 2. Derive the expectation of $F_t$.
+
+\textbf{Answer:}
+
+$$
+\begin{aligned}
+\mu_F &= E(\sum_{i=0}^{m-2} d_i \times X_{t-i})\\
+\\
+&= \sum_{i=0}^{m-2} d_i \times E(X_{t-i})\\
+\\
+&= \sum_{i=0}^{m-2} d_i \times  \mu_X\\
+\\
+&= \bigg \{ \sum_{i=0}^{r-1} d_i \times \mu_X \bigg \} + \bigg\{ \sum_{i=r}^{m-2} d_i \times \mu_X \bigg \} \\
+\end{aligned}
+$$
+
+\newpage
+
+Question 3. Derive the autocorrelation function at lag one for the predictor.
+
+\textbf{Answer:}
+
+$$
+\begin{aligned}
+\rho_F(1) &= corr(F_t, F_{t-1}) = \frac{\gamma_F(1)}{\gamma_F(0)} = \frac{\gamma_F(1)}{\sigma_F^2} \ \ \ \ \ \ \  Note: \gamma_F(0) = Var(F_t) = \sigma_F^2\\
+\\
+\gamma_F(1) &= cov(F_t, F_{t-1})\\
+\\
+&= cov(\sum_{i=0}^{m-2} d_i X_{t-i}, \sum_{j=0}^{m-2} d_j X_{t-1-j})\\
+\\
+&\approx E(\sum_{i=0}^{m-2} \sum_{j=0}^{m-2} d_i \times d_j \times X_{t-i} X_{t-1-j})\\
+\\
+&= \sum_{i=0}^{m-2} \sum_{j=0}^{m-2} d_i \times d_j \times cov(X_{t-i},X_{t-1-j})\\
+\\
+&= \sum_{i=0}^{m-2} \sum_{j=0}^{m-2} d_i \times d_j \times \gamma_{(i-1-j)}\\
+\\
+&= \sum_{i=0}^{m-2} d_i \bigg \{ \sum_{j=0}^{r-1} d_j \gamma_{(i-1-j)} + \sum_{j=r}^{m-2} d_j \gamma_{(i-1-j)} \bigg \}\\
+\\
+&= \sum_{i=0}^{r-1} d_i \bigg \{ \sum_{j=0}^{r-1} d_j \gamma_{(i-1-j)} + \sum_{j=r}^{m-2} d_j \gamma_{(i-1-j)} \bigg \} \\
+\\
+&+ \sum_{i=r}^{m-2} d_i \bigg \{ \sum_{j=0}^{r-1} d_j \gamma_{(i-1-j)} + \sum_{j=r}^{m-2} d_j \gamma_{(i-1-j)} \bigg \}
+\end{aligned}
+$$
+
+Given the value/expression of $\sigma_F^2$ from answer to Question 1,
+
+$$
+\begin{aligned}
+\rho_F(1) &= \frac{1}{\sigma_F^2} \times \bigg \{ \sum_{i=0}^{r-1} d_i \bigg \{ \sum_{j=0}^{r-1} d_j \gamma_{(i-1-j)} + \sum_{j=r}^{m-2} d_j \gamma_{(i-1-j)} \bigg \} \\
+\\
+&+ \sum_{i=r}^{m-2} d_i \bigg \{ \sum_{j=0}^{r-1} d_j \gamma_{(i-1-j)} + \sum_{j=r}^{m-2} d_j \gamma_{(i-1-j)} \bigg \} \bigg \} \\
+&(where \ \sigma^2_F \ was \ derived \ in \ Question \ 1.)
+\\
+\end{aligned}
+$$
+
+\newpage
+
+Question 4. Write a R function to calculate the expectation of the rule return for a given double MA trading rule (See Appendix) and the expected length of the holding period.
+
+\textbf{Answer:}
+
+Notes, we need to derive a formula for $corr(X_t, F_{t-1})$ to compute $E(R_t)$.
+
+$$
+\begin{aligned}
+corr(X_t, F_{t-1}) &= \frac{cov(X_t, F_{t-1})}{\sqrt{var(X_t) \times var(F_{t-1})}} \\
+\\
+&=  \frac{cov(X_t,  \sum_{j=0}^{m-2} d_j X_{t-1-j})}{\sqrt{var(X_t) \times var(F_{t-1})}} \\
+\\
+&= \frac{\sum _{i=0}^{m-2} \gamma_{(i+1)}}{\sqrt{\gamma_0 \{\sum_{i=0}^{m-2} \sum_{j=0}^{m-2} d_i \times d_j \times \gamma_{(i-j)} \}}}
+\end{aligned}
+$$
+
+
+```{r eval = TRUE, echo =TRUE}
+X_func <- function(price){
+  x_vec <- c()
+  for (i in 1: length(price)-1){
+    x_vec[i] <- log(price[i] / price[i+1])
+  }
+  return(x_vec)
+}
+
+intergrand <- function(x){
+  res <- (sqrt(2 * pi))^(-1) * exp(-x^2 / 2)
+  return(res)
+}
+
+phi_func <- function(h){
+  res <- integrate(intergrand, lower = -Inf, upper = h)$value
+  return(res)
+}
+
+d_func <- function(m,r){
+  res <- c()
+  for (i in 1: (r)){
+    res[i] <-(m-r) * (i)
+  }
+  for (i in (r+1):(m-1)){
+    res[i] <- r * (m-i)
+  }
+  return(res)
+}
+
+sigma_f_func <- function(m, r, gamma_x){
+  d <- d_func(m,r)
+  res <- 0
+  for (i in 1: (m-1)){
+    for (j in 1: (m-1)){
+      res <- res + d[i] * d[j] * gamma_x[abs(i-j)+1]
+    }
+  }
+  res <- sqrt(res)
+  return(res)
+}
+
+mu_f_func <- function(m,r,mu_x){
+  d <- d_func(m,r)
+  res <- sum(d) * mu_x
+  return(res)
+}
+
+corr_xf_func <- function(m,r,gamma_x){
+  d <- d_func(m,r)
+  a <- sigma_f_func(m,r,gamma_x)
+  res <- sum(d * gamma_x[2:m]) / (sqrt(gamma_x[1]) * a)
+  return(res)
+}
+
+expectation <- function(s,m,r){
+  GSPC_rev <- as.data.frame(s)
+  GSPC_rev <- GSPC_rev[dim(GSPC_rev)[1]:1,]
+
+  x <- X_func(GSPC_rev$GSPC.Adjusted)
+  mu_x <- mean(x)
+  sigma_x <- sd(x)
+  gamma_x <- as.numeric(acf(x, type = "covariance", plot=FALSE, lag.max = length(x))$acf)
+
+  d <- d_func(m,r)
+  mu_f <- mu_f_func(m,r,mu_x)
+  sigma_f <- sigma_f_func(m,r,gamma_x)
+  frac_f <- mu_f / sigma_f
+  phi <- phi_func(-frac_f)
+  corr <- corr_xf_func(m,r,gamma_x)
+  ert <- sqrt(2/pi) * sigma_x * corr * exp(-0.5 * (frac_f ^ 2)) + mu_x * (1 - 2*phi)
+
+  h <- 0
+  d <- d_func(m,r)
+  for (i in 1: (m-1)){
+    for (j in 1: (m-1)){
+      h <- h + d[i] * d[j] * gamma_x[abs(i-j-1)+1]
+    }
+  }
+  h <- h / (sigma_f ^2)
+  h <- pi / acos(h)
+
+  return(list(ert = ert, h = h))
+}
+
+```
+
+\newpage
+
+Question 5. Use a R function to download daily, weekly S&P500 index from Oct/01/2009 to Sep/30/2018 from yahoo finance.
+
+\textbf{Answer:}
+
+```{r eval = TRUE, echo = FALSE, warning=FALSE, message=FALSE}
+library("quantmod")
+GSPC_daily <- getSymbols(Symbols = "^GSPC", src = "yahoo", auto.assign = FALSE,
+                         from = "2009-10-01", to = "2018-09-30")
+
+
+GSPC_weekly <- getSymbols(Symbols = "^GSPC", src = "yahoo", auto.assign = FALSE,
+                          from = "2009-10-01", to = "2018-09-30", periodicity = "weekly")
+
+cat("daily S&P500 index", "\n")
+
+summary(GSPC_daily)
+
+cat("\n","\n")
+cat("weekly S&P500 index", "\n")
+
+summary(GSPC_weekly)
+```
+
+
+\newpage
+
+Question 6. Write a R function to choose the optimal daily and weekly double MA trading rules (that maximize the expected rule returns) for S&P500 index.
+
+\textbf{Answer:}
+
+```{r eval = TRUE, echo = FALSE}
+pair <- function(m_max){
+  #m-2 >= r
+  m <- seq(3,m_max,by=1)
+  p <- list()
+  for (i in 1:length(m)){
+    a <- seq(1,m[i]-2,by=1)
+    p[[i]] <- expand.grid(m[i],a)
+  }
+  res <- do.call(rbind, p)
+  colnames(res) <- c("m","r")
+  return(res)
+}
+
+optimal_rt <- function(s,m_max){
+  pair_mr <- pair(m_max)
+  expected_return_vec <- c()
+  for (i in 1: nrow(pair_mr)){
+    m_iter <- as.numeric(pair_mr[i,])[1]
+    r_iter <- as.numeric(pair_mr[i,])[2]
+    expected_return_vec[i] <- expectation(s,m_iter,r_iter)[1]
+  }
+  max_mr <- pair_mr[which.max(expected_return_vec),]
+  return(max_mr)
+}
+
+m_max_day <- 50
+mr <- optimal_rt(GSPC_daily, m_max_day)
+m_max_week <- 52
+mr_w <- optimal_rt(GSPC_weekly, m_max_week)
+```
+
+```{r eval = TRUE, echo = FALSE}
+cat("daily S&P500 index","\n")
+cat("mr pair", "(", as.numeric(mr[1]), ",", as.numeric(mr[2]), ")", "has highest E(Rt)", "\n", "\n")
+
+cat("weekly S&P500 index","\n")
+cat("mr pair", "(", as.numeric(mr_w[1]), ",", as.numeric(mr_w[2]), ")", "has highest E(Rt)", "\n")
+```
+
+Therefore, optimal daily double MA trading rules are (44,40) and optimal weekly double MA trading rules are (52,50).
+
+\newpage
+
+Question 7. Write a R function to calculate the in-sample trading statistics (cumulative return and holding time) of your choice and compare them with your theoretical results.
+
+\textbf{Answer:}
+
+```{r eval= TRUE, echo = FALSE}
+trading_statistics <- function(s,m,r){
+  GSPC_rev <- as.data.frame(s)
+  GSPC_rev <- GSPC_rev[dim(GSPC_rev)[1]:1,]
+  price <- GSPC_rev$GSPC.Adjusted
+  x <- X_func(price)
+  n <- length(price) - (m-1)
+  d <- d_func(n+1,r)
+  f <- c()
+  for (i in 1:(n)){
+    f[i] <- sum(d[i:n] * x[(i+1):(n+1)])
+  }
+  b <- ifelse(f > 0, 1, -1)
+  sum_r_t <- sum(b * x[1:n])
+  res <- sum_r_t / n
+  count <-  sum(diff(sign(b)) != 0)
+  count <- n/count
+  return(list(crt=res, avht = count))
+}
+
+mr <- c(250,248)
+expect_return_d <- expectation(GSPC_daily, as.numeric(mr)[1], as.numeric(mr)[2])$ert
+expect_holding_time <- expectation(GSPC_daily, as.numeric(mr)[1], as.numeric(mr)[2])$h
+cumulative_return_d <-  trading_statistics(GSPC_daily, as.numeric(mr)[1], as.numeric(mr)[2])$crt
+average_holding <-  trading_statistics(GSPC_daily, as.numeric(mr)[1], as.numeric(mr)[2])$avht
+
+cat("daily S&P500 index","\n")
+cat("theoretical cumulative return:" ,expect_return_d, "\n")
+cat("sample cumulative return:", cumulative_return_d,"\n","\n")
+
+cat("theoretical holding time:", expect_holding_time,"\n")
+cat("sample holding time:", average_holding,"\n","\n")
+```
+
+```{r eval= TRUE, echo = FALSE, warning = FALSE}
+
+expect_returnw <- expectation(GSPC_weekly, as.numeric(mr_w)[1], as.numeric(mr_w)[2])$ert
+expect_holding_time_w <- expectation(GSPC_weekly, as.numeric(mr_w)[1], as.numeric(mr_w)[2])$h
+cumulative_return_w <- trading_statistics(GSPC_weekly, as.numeric(mr_w)[1], as.numeric(mr_w)[2])$crt
+average_holding_w <- trading_statistics(GSPC_weekly, as.numeric(mr_w)[1], as.numeric(mr_w)[2])$avht
+
+
+cat("weekly S&P500 index","\n")
+cat("theoretical cumulative return:" ,expect_returnw, "\n")
+cat("sample cumulative return:", cumulative_return_w,"\n","\n")
+
+cat("theoretical holding time:", expect_holding_time_w,"\n")
+cat("sample holding time:", average_holding_w,"\n")
+```
+
+For daily S&P500 index, theoretical cumulative return (0.0003198645) is similiar to average cumulative return (0.000256746). Theoretical holding time (23.07712) is much smaller than average holding time (61.09091).
+
+For weekly S&P500 index, theoretical cumulative return (0.001520497) is similiar to average cumulative return (0.001612475). Theoretical holding time (11.31526) is much smaller than average holding time (69.83333).

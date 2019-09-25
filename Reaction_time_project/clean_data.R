@@ -2,7 +2,7 @@ library(tidyverse)
 library(readxl)
 library(ggplot2)
 
-rt490<-read_excel("C:/Users/AoFei/Desktop/Sophie/sta490/STA490_draft_report/reactiontimeSophie.xlsx", 
+rt490<-read_excel("C:/Users/AoFei/Desktop/sta490/STA490_draft_report/reactiontime.xlsx", 
                   col_types = 
                     c("numeric", "numeric", "numeric", "numeric", "date", "text", "numeric", "numeric","text","numeric","numeric","text", "text", "skip")) 
 
